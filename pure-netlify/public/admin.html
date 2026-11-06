@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>PURE — адмінка</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='32' fill='%233d4732'/%3E%3Ctext x='32' y='44' font-family='Georgia' font-size='34' fill='%23f3eee4' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--olive:#3d4732;--moss:#6b7a55;--sage-l:#e4e8d8;--cream:#f3eee4;--paper:#f7f5ef;--ink:#23281c;--muted:#6c705f;--line:rgba(35,40,28,.12);--wine:#8a2a36;
+--new:#c07a14;--acc:#2f6f9f;--done:#3e7b45;--can:#8a8a80;--serif:'Cormorant Garamond',Georgia,serif;--sans:'Manrope',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:14px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+.hidden{display:none!important}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:13px;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--olive)}
+.btn.dark{background:var(--olive);border-color:var(--olive);color:#fff}
+.btn.dark:hover{background:var(--ink)}
+.btn.red{color:var(--wine)}
+.btn.red:hover{border-color:var(--wine)}
+.btn.sm{padding:5px 10px;font-size:12px;border-radius:8px}
+input,select,textarea{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:#fff;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--moss);box-shadow:0 0 0 3px rgba(107,122,85,.15)}
+label.l{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 5px}
+
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:20px;background:var(--olive)}
+#login form{background:var(--paper);border-radius:22px;padding:40px;width:min(380px,100%);box-shadow:0 40px 80px -30px rgba(0,0,0,.5)}
+#login h1{font-family:var(--serif);font-weight:400;font-size:44px;letter-spacing:.15em;text-align:center}
+#login p{text-align:center;color:var(--muted);margin-bottom:26px}
+#login .f{margin-bottom:14px}
+#login .btn{width:100%;padding:13px}
+.lerr{color:var(--wine);margin-bottom:10px;min-height:20px;text-align:center}
+
+/* layout */
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+aside{background:var(--olive);color:var(--cream);padding:24px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+aside .logo{font-family:var(--serif);font-size:30px;letter-spacing:.18em;padding:0 10px 4px}
+aside .who{font-size:12px;opacity:.7;padding:0 10px 22px}
+aside nav{display:flex;flex-direction:column;gap:3px;flex:1}
+aside nav button{background:none;border:0;color:inherit;text-align:left;padding:10px 12px;border-radius:10px;cursor:pointer;opacity:.75;font-weight:500;display:flex;justify-content:space-between;align-items:center}
+aside nav button:hover{opacity:1;background:rgba(255,255,255,.06)}
+aside nav button.on{opacity:1;background:rgba(255,255,255,.12)}
+aside .badge{background:var(--new);color:#fff;border-radius:99px;font-size:11px;padding:1px 8px;font-weight:700}
+aside .bottom{display:flex;flex-direction:column;gap:6px}
+aside .bottom a,aside .bottom button{background:none;border:0;color:inherit;opacity:.7;text-align:left;padding:8px 12px;cursor:pointer;font-size:13px;text-decoration:none}
+aside .bottom a:hover,aside .bottom button:hover{opacity:1}
+main{padding:30px 34px 80px;min-width:0}
+h2.t{font-family:var(--serif);font-weight:500;font-size:38px;margin-bottom:6px}
+.sub{color:var(--muted);margin-bottom:22px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.pill{border:1px solid var(--line);background:#fff;border-radius:99px;padding:7px 14px;cursor:pointer;font-weight:600;font-size:13px}
+.pill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pill .c{opacity:.6;margin-left:4px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}
+
+/* bookings */
+.blist{display:grid;gap:12px}
+.bk{display:grid;grid-template-columns:1fr auto;gap:14px;border-left:4px solid var(--line)}
+.bk.new{border-left-color:var(--new)}.bk.accepted{border-left-color:var(--acc)}.bk.done{border-left-color:var(--done)}.bk.cancelled{border-left-color:var(--can);opacity:.75}
+.bk h3{font-size:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.st{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;color:#fff;letter-spacing:.03em}
+.st.new{background:var(--new)}.st.accepted{background:var(--acc)}.st.done{background:var(--done)}.st.cancelled{background:var(--can)}
+.bk .meta{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);margin-top:6px}
+.bk .meta b{color:var(--ink);font-weight:600}
+.bk .cm{margin-top:8px;background:var(--paper);border-radius:10px;padding:8px 12px}
+.bk .acts{display:flex;flex-direction:column;gap:6px;align-items:stretch;min-width:150px}
+.bk .edit{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding-top:12px;border-top:1px dashed var(--line)}
+.bk .edit .w2{grid-column:span 2}
+.empty{color:var(--muted);text-align:center;padding:50px 0}
+
+/* services */
+.cat{margin-bottom:18px}
+.cat-h{display:grid;grid-template-columns:1.2fr 1.4fr auto auto;gap:10px;align-items:end;margin-bottom:12px}
+.srow{display:grid;grid-template-columns:28px 1fr 110px 110px auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line)}
+.srow.off{opacity:.45}
+.srow .mv{display:flex;flex-direction:column}
+.srow .mv button{background:none;border:0;cursor:pointer;font-size:10px;line-height:1;padding:2px;opacity:.5}
+.srow .mv button:hover{opacity:1}
+.srow .a{display:flex;gap:4px}
+.hd{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.check{display:flex;gap:6px;align-items:center;font-size:13px;white-space:nowrap;cursor:pointer}
+.check input{width:auto}
+
+/* gallery */
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.gi{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.gi img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.gi .b{padding:10px;display:grid;gap:6px}
+.gi .r{display:flex;gap:4px;justify-content:space-between}
+.up{display:grid;grid-template-columns:2fr 1fr 1.5fr auto;gap:10px;align-items:end;margin-bottom:22px}
+
+/* masters/users */
+.mlist{display:grid;gap:10px}
+.mi{display:grid;grid-template-columns:64px 1fr 1.4fr auto auto;gap:12px;align-items:center}
+.ava{width:64px;height:64px;border-radius:50%;background:var(--sage-l);overflow:hidden;display:grid;place-items:center;font-family:var(--serif);font-size:26px;color:var(--moss);cursor:pointer;position:relative}
+.ava img{width:100%;height:100%;object-fit:cover}
+.ava:hover::after{content:'змінити';position:absolute;inset:0;background:rgba(0,0,0,.45);color:#fff;font:600 10px var(--sans);display:grid;place-items:center}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--paper)}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.form-grid .full{grid-column:1/-1}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:12px;opacity:0;transition:.25s;z-index:99;pointer-events:none;font-weight:600}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.toast.err{background:var(--wine)}
+.mob-top{display:none}
+
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  aside{position:fixed;inset:0 auto 0 0;width:250px;z-index:60;transform:translateX(-100%);transition:.25s}
+  aside.open{transform:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.4)}
+  .mob-top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--olive);color:var(--cream);position:sticky;top:0;z-index:50}
+  .mob-top b{font-family:var(--serif);font-size:24px;letter-spacing:.15em;font-weight:400}
+  .mob-top button{background:none;border:0;color:inherit;font-size:24px;cursor:pointer}
+  main{padding:20px 14px 80px}
+  .bk{grid-template-columns:1fr}
+  .bk .acts{flex-direction:row;flex-wrap:wrap;min-width:0}
+  .bk .edit{grid-template-columns:1fr 1fr}
+  .cat-h{grid-template-columns:1fr 1fr}
+  .srow{grid-template-columns:22px 1fr 70px 70px;grid-template-areas:"m n n n" "m p t a"}
+  .srow .mv{grid-area:m}.srow .nm{grid-area:n}.srow .pr{grid-area:p}.srow .pt{grid-area:t}.srow .a{grid-area:a}
+  .srow.hdr{display:none}
+  .up,.mi{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  table{font-size:13px} th:nth-child(3),td:nth-child(3){display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="login" class="hidden">
+  <form id="loginForm">
+    <h1>PURE</h1>
+    <p>Вхід для адміністратора та майстрів</p>
+    <div class="f"><label class="l">Логін</label><input name="login" autocomplete="username" required autocapitalize="off"></div>
+    <div class="f"><label class="l">Пароль</label><input name="password" type="password" autocomplete="current-password" required></div>
+    <div class="lerr" id="lerr"></div>
+    <button class="btn dark">Увійти</button>
+  </form>
+</div>
+
+<div id="app" class="hidden">
+  <div class="mob-top"><button onclick="side.classList.add('open')">☰</button><b>PURE</b><span style="width:24px"></span></div>
+  <div class="app">
+    <aside id="side">
+      <div class="logo">PURE</div>
+      <div class="who" id="who"></div>
+      <nav id="menu"></nav>
+      <div class="bottom">
+        <a href="/" target="_blank" rel="noopener">↗ Відкрити сайт</a>
+        <button onclick="go('password')">Змінити пароль</button>
+        <button onclick="logout()">Вийти</button>
+      </div>
+    </aside>
+    <main id="main"></main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<input type="file" id="filePick" accept="image/*" class="hidden">
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const side = $('#side');
+let ME = null, VIEW = 'bookings', MASTERS = [], bFilter = 'new', bSearch = '', openEdit = new Set();
+const ST = {new:'Нова', accepted:'Прийнята', done:'Виконана', cancelled:'Скасована'};
+
+function toast(m, err) { const t = $('#toast'); t.textContent = m; t.className = 'toast on' + (err?' err':''); clearTimeout(t._t); t._t = setTimeout(() => t.className = 'toast', 2200); }
+async function api(url, opt = {}) {
+  const o = { method: opt.method || 'GET', headers: {} };
+  if (opt.body instanceof FormData) o.body = opt.body;
+  else if (opt.body !== undefined) { o.body = JSON.stringify(opt.body); o.headers['Content-Type'] = 'application/json'; }
+  const r = await fetch(url, o);
+  if (r.status === 401) { showLogin(); throw new Error('Потрібен вхід'); }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { toast(j.error || 'Помилка', true); throw new Error(j.error); }
+  return j;
+}
+const fmtDate = d => d ? new Date(d+'T00:00').toLocaleDateString('uk-UA',{day:'numeric',month:'long',weekday:'short'}) : '';
+const fmtTs = t => new Date(t).toLocaleString('uk-UA',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+
+// стискаємо фото перед завантаженням (швидше і вміщується в ліміти хостингу)
+async function compress(file, max = 1600) {
+  if (!file || !file.type.startsWith('image/') || file.type === 'image/gif') return file;
+  try {
+    const bmp = await createImageBitmap(file);
+    const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', .85));
+    return blob ? new File([blob], (file.name || 'photo').replace(/\.\w+$/, '') + '.jpg', {type: 'image/jpeg'}) : file;
+  } catch { return file; }
+}
+
+// ---------- auth ----------
+function showLogin() { $('#app').classList.add('hidden'); $('#login').classList.remove('hidden'); }
+$('#loginForm').onsubmit = async e => {
+  e.preventDefault(); $('#lerr').textContent = '';
+  const r = await fetch('/api/login', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(Object.fromEntries(new FormData(e.target)))});
+  const j = await r.json();
+  if (!r.ok) return $('#lerr').textContent = j.error || 'Помилка';
+  e.target.reset(); start();
+};
+async function logout() { await fetch('/api/logout', {method:'POST'}); location.reload(); }
+async function start() {
+  try { ME = await fetch('/api/me').then(r => r.ok ? r.json() : null); } catch { ME = null; }
+  if (!ME) return showLogin();
+  $('#login').classList.add('hidden'); $('#app').classList.remove('hidden');
+  $('#who').textContent = (ME.role === 'admin' ? 'Адміністратор' : 'Майстер') + ' · ' + (ME.master ? ME.master.name : ME.login);
+  const items = [['bookings','Заявки']];
+  if (ME.role === 'admin') items.push(['services','Послуги і ціни'],['gallery','Фото робіт'],['masters','Майстри'],['users','Доступи'],['settings','Налаштування']);
+  $('#menu').innerHTML = items.map(([k,n]) => `<button data-v="${k}">${n}${k==='bookings'?'<span class="badge hidden" id="nb"></span>':''}</button>`).join('');
+  $('#menu').onclick = e => { const b = e.target.closest('button'); if (b) go(b.dataset.v); };
+  MASTERS = await api('/api/masters-list');
+  go('bookings');
+  setInterval(() => { if (VIEW === 'bookings' && !openEdit.size && document.activeElement?.tagName !== 'INPUT') loadBookings(true); else pollCount(); }, 30000);
+}
+function go(v) {
+  VIEW = v; side.classList.remove('open');
+  document.querySelectorAll('#menu button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  ({bookings:viewBookings, services:viewServices, gallery:viewGallery, masters:viewMasters, users:viewUsers, settings:viewSettings, password:viewPassword})[v]();
+}
+function setBadge(n) { const b = $('#nb'); if (!b) return; b.textContent = n; b.classList.toggle('hidden', !n); document.title = (n ? `(${n}) ` : '') + 'PURE — адмінка'; }
+async function pollCount() { try { const j = await api('/api/bookings?status=new'); setBadge(j.counts.new || 0); } catch {} }
+
+// ---------- bookings ----------
+function viewBookings() {
+  $('#main').innerHTML = `<h2 class="t">Заявки</h2>
+    <p class="sub">${ME.role==='admin' ? 'Усі заявки з сайту. Призначайте майстра, змінюйте статус, дату й час.' : 'Заявки до вас та заявки без майстра. Прийміть заявку — вона закріпиться за вами.'}</p>
+    <div class="bar" id="bfil"></div>
+    <div class="bar"><input id="bq" placeholder="Пошук: ім’я, телефон, послуга" style="max-width:340px" value="${esc(bSearch)}"></div>
+    <div class="blist" id="blist"><div class="empty">Завантаження…</div></div>`;
+  let t; $('#bq').oninput = e => { clearTimeout(t); t = setTimeout(() => { bSearch = e.target.value; loadBookings(); }, 300); };
+  loadBookings();
+}
+async function loadBookings(silent) {
+  const j = await api('/api/bookings?' + new URLSearchParams({status: bFilter === 'all' ? '' : bFilter, q: bSearch}));
+  setBadge(j.counts.new || 0);
+  if (VIEW !== 'bookings') return;
+  const total = Object.values(j.counts).reduce((a,b)=>a+b,0);
+  $('#bfil').innerHTML = [['new','Нові'],['accepted','Прийняті'],['done','Виконані'],['cancelled','Скасовані'],['all','Усі']].map(([k,n]) =>
+    `<button class="pill ${bFilter===k?'on':''}" data-k="${k}">${n}<span class="c">${k==='all'?total:(j.counts[k]||0)}</span></button>`).join('');
+  $('#bfil').onclick = e => { const b = e.target.closest('.pill'); if (b) { bFilter = b.dataset.k; openEdit.clear(); loadBookings(); } };
+  $('#blist').innerHTML = j.items.length ? j.items.map(bkHtml).join('') : `<div class="empty">Тут поки порожньо ✨</div>`;
+}
+function bkHtml(b) {
+  const A = ME.role === 'admin', mine = b.master_id && b.master_id === ME.master_id;
+  const acts = [];
+  if (b.status === 'new') acts.push(`<button class="btn dark" onclick="setSt(${b.id},'accepted')">✓ Прийняти</button>`);
+  if (b.status === 'accepted') acts.push(`<button class="btn dark" onclick="setSt(${b.id},'done')">✓ Виконано</button>`);
+  if (b.status === 'new' || b.status === 'accepted') acts.push(`<button class="btn red" onclick="setSt(${b.id},'cancelled',true)">Скасувати</button>`);
+  if (b.status === 'accepted' && !A && mine) acts.push(`<button class="btn" onclick="setSt(${b.id},'new')">Повернути в нові</button>`);
+  if (b.status === 'done' || b.status === 'cancelled') acts.push(`<button class="btn" onclick="setSt(${b.id},'accepted')">Повернути в роботу</button>`);
+  acts.push(`<button class="btn" onclick="toggleEdit(${b.id})">${openEdit.has(b.id)?'Згорнути':'Редагувати'}</button>`);
+  const edit = openEdit.has(b.id) ? `<div class="edit" id="ed${b.id}">
+      <div><label class="l">Дата</label><input type="date" name="date" value="${esc(b.date)}"></div>
+      <div><label class="l">Час</label><input type="time" name="time" value="${esc(b.time)}" step="900"></div>
+      ${A ? `<div class="w2"><label class="l">Майстер</label><select name="master_id"><option value="">— не призначено —</option>${MASTERS.map(m=>`<option value="${m.id}" ${m.id===b.master_id?'selected':''}>${esc(m.name)} · ${esc(m.title)}</option>`).join('')}</select></div>
+      <div><label class="l">Ім’я</label><input name="name" value="${esc(b.name)}"></div><div><label class="l">Телефон</label><input name="phone" value="${esc(b.phone)}"></div>
+      <div class="w2"><label class="l">Послуга</label><input name="service" value="${esc(b.service)}"></div>` : '<div class="w2"></div>'}
+      <div class="w2" style="grid-column:1/-1"><label class="l">Внутрішня нотатка (клієнт не бачить)</label><textarea name="note" rows="2">${esc(b.note)}</textarea></div>
+      <div style="grid-column:1/-1;display:flex;gap:8px;justify-content:space-between"><button class="btn dark" onclick="saveEdit(${b.id})">Зберегти</button>${A?`<button class="btn red" onclick="delBk(${b.id})">Видалити заявку</button>`:''}</div>
+    </div>` : '';
+  return `<div class="card bk ${b.status}">
+    <div>
+      <h3>${esc(b.name)} <span class="st ${b.status}">${ST[b.status]}</span> <span style="color:var(--muted);font-weight:400;font-size:12px">№${b.id} · ${fmtTs(b.created)}</span></h3>
+      <div class="meta">
+        <span>📞 <a href="tel:${esc(b.phone.replace(/[^\d+]/g,''))}"><b>${esc(b.phone)}</b></a></span>
+        <span>💅 <b>${esc(b.service || 'послуга не обрана')}</b></span>
+        <span>📅 <b>${b.date ? esc(fmtDate(b.date)) : 'дата не вказана'}</b>${b.time ? ' о <b>'+esc(b.time)+'</b>' : ''}</span>
+        <span>👩 <b>${b.master_name ? esc(b.master_name) + ' · ' + esc(b.master_title) : 'будь-який майстер'}</b></span>
+      </div>
+      ${b.comment ? `<div class="cm">💬 ${esc(b.comment)}</div>` : ''}
+      ${b.note ? `<div class="cm" style="background:#fff8e8">📝 ${esc(b.note)}</div>` : ''}
+      ${b.handled_name && b.status !== 'new' ? `<div style="color:var(--muted);font-size:12px;margin-top:6px">Оновив(ла): ${esc(b.handled_name)} · ${fmtTs(b.updated)}</div>` : ''}
+    </div>
+    <div class="acts">${acts.join('')}</div>${edit}</div>`;
+}
+async function setSt(id, st, confirmIt) {
+  if (confirmIt && !confirm('Скасувати заявку?')) return;
+  await api('/api/bookings/' + id, {method:'PATCH', body:{status:st}});
+  toast({accepted:'Заявку прийнято', done:'Позначено як виконану', cancelled:'Заявку скасовано', new:'Повернуто в нові'}[st]);
+  loadBookings();
+}
+function toggleEdit(id) { openEdit.has(id) ? openEdit.delete(id) : openEdit.add(id); loadBookings(); }
+async function saveEdit(id) {
+  const box = $('#ed' + id), body = {};
+  box.querySelectorAll('[name]').forEach(el => body[el.name] = el.value);
+  if ('master_id' in body) body.master_id = body.master_id || null;
+  await api('/api/bookings/' + id, {method:'PATCH', body});
+  openEdit.delete(id); toast('Збережено'); loadBookings();
+}
+async function delBk(id) { if (!confirm('Видалити заявку назавжди?')) return; await api('/api/bookings/' + id, {method:'DELETE'}); openEdit.delete(id); toast('Видалено'); loadBookings(); }
+
+// ---------- services ----------
+async function viewServices() {
+  const cats = await api('/api/admin/categories');
+  $('#main').innerHTML = `<h2 class="t">Послуги і ціни</h2>
+    <p class="sub">Зміни зберігаються автоматично. Ціну можна писати як «850», «від 60», «+100» або «1000 / процедура» — «₴» сайт додасть сам.</p>
+    <div class="bar"><button class="btn dark" onclick="addCat()">+ Додати категорію</button></div>
+    <div id="cats">${cats.map(catHtml).join('')}</div>`;
+}
+function catHtml(c) {
+  return `<div class="card cat" data-c="${c.id}">
+    <div class="cat-h">
+      <div><label class="l">Категорія</label><input value="${esc(c.name)}" onchange="saveCat(${c.id})" data-f="name"></div>
+      <div><label class="l">Примітка під прайсом</label><input value="${esc(c.note)}" onchange="saveCat(${c.id})" data-f="note"></div>
+      <label class="check"><input type="checkbox" ${c.has_top?'checked':''} onchange="saveCat(${c.id}, true)" data-f="has_top"> Колонка «Топ-майстер»</label>
+      <div style="display:flex;gap:4px"><button class="btn sm" onclick="moveCat(${c.id},-1)">↑</button><button class="btn sm" onclick="moveCat(${c.id},1)">↓</button><button class="btn sm red" onclick="delCat(${c.id})">Видалити</button></div>
+    </div>
+    <input type="hidden" data-f="sort" value="${c.sort}">
+    <div class="srow hdr"><span></span><span class="hd">Послуга</span><span class="hd">${c.has_top?'Майстер':'Ціна'}</span><span class="hd">${c.has_top?'Топ-майстер':''}</span><span></span></div>
+    ${c.services.map(s => `<div class="srow ${s.active?'':'off'}" data-s="${s.id}" data-sort="${s.sort}">
+      <div class="mv"><button onclick="moveSvc(${c.id},${s.id},-1)">▲</button><button onclick="moveSvc(${c.id},${s.id},1)">▼</button></div>
+      <input class="nm" value="${esc(s.name)}" onchange="saveSvc(${s.id})" data-f="name">
+      <input class="pr" value="${esc(s.price)}" onchange="saveSvc(${s.id})" data-f="price" placeholder="ціна">
+      <input class="pt" value="${esc(s.price_top)}" onchange="saveSvc(${s.id})" data-f="price_top" placeholder="${c.has_top?'топ':'—'}" ${c.has_top?'':'disabled'}>
+      <div class="a"><button class="btn sm" title="Показувати / приховати на сайті" onclick="toggleSvc(${s.id})">${s.active?'👁':'🚫'}</button><button class="btn sm red" onclick="delSvc(${s.id})">✕</button></div>
+    </div>`).join('')}
+    <button class="btn sm" style="margin-top:12px" onclick="addSvc(${c.id})">+ Додати послугу</button>
+  </div>`;
+}
+const catBody = id => { const el = document.querySelector(`[data-c="${id}"]`); return { name: el.querySelector('[data-f=name]').value, note: el.querySelector('[data-f=note]').value, has_top: el.querySelector('[data-f=has_top]').checked, sort: +el.querySelector('[data-f=sort]').value }; };
+async function saveCat(id, rerender) { await api('/api/admin/categories/' + id, {method:'PUT', body: catBody(id)}); toast('Збережено'); if (rerender) viewServices(); }
+async function addCat() { const n = prompt('Назва категорії'); if (!n) return; await api('/api/admin/categories', {method:'POST', body:{name:n}}); viewServices(); }
+async function delCat(id) { if (!confirm('Видалити категорію разом з усіма її послугами?')) return; await api('/api/admin/categories/' + id, {method:'DELETE'}); viewServices(); }
+async function moveCat(id, d) {
+  const els = [...document.querySelectorAll('[data-c]')], i = els.findIndex(e => +e.dataset.c === id), j = i + d;
+  if (j < 0 || j >= els.length) return;
+  [els[i], els[j]] = [els[j], els[i]];
+  await Promise.all(els.map((e, k) => { const b = catBody(+e.dataset.c); b.sort = k; return api('/api/admin/categories/' + e.dataset.c, {method:'PUT', body:b}); }));
+  viewServices();
+}
+const svcBody = id => { const el = document.querySelector(`[data-s="${id}"]`); return { name: el.querySelector('[data-f=name]').value, price: el.querySelector('[data-f=price]').value, price_top: el.querySelector('[data-f=price_top]').value, sort: +el.dataset.sort, active: !el.classList.contains('off') }; };
+async function saveSvc(id) { await api('/api/admin/services/' + id, {method:'PUT', body: svcBody(id)}); toast('Збережено'); }
+async function toggleSvc(id) { const el = document.querySelector(`[data-s="${id}"]`); el.classList.toggle('off'); await saveSvc(id); viewServices(); }
+async function addSvc(cid) { await api('/api/admin/services', {method:'POST', body:{category_id:cid, name:'Нова послуга'}}); await viewServices(); const rows = document.querySelectorAll(`[data-c="${cid}"] .srow[data-s]`); rows[rows.length-1]?.querySelector('input')?.select(); }
+async function delSvc(id) { if (!confirm('Видалити послугу?')) return; await api('/api/admin/services/' + id, {method:'DELETE'}); viewServices(); }
+async function moveSvc(cid, id, d) {
+  const rows = [...document.querySelectorAll(`[data-c="${cid}"] .srow[data-s]`)], i = rows.findIndex(r => +r.dataset.s === id), j = i + d;
+  if (j < 0 || j >= rows.length) return;
+  [rows[i], rows[j]] = [rows[j], rows[i]];
+  await Promise.all(rows.map((r, k) => { r.dataset.sort = k; return api('/api/admin/services/' + r.dataset.s, {method:'PUT', body: svcBody(+r.dataset.s)}); }));
+  viewServices();
+}
+
+// ---------- gallery ----------
+const TAGS = ['Манікюр','Педикюр','Брови','Вії','Перманент','Макіяж','Інтер’єр'];
+async function viewGallery() {
+  const g = await api('/api/admin/gallery');
+  $('#main').innerHTML = `<h2 class="t">Фото робіт</h2>
+    <p class="sub">Ці фото показуються в розділі «Наші роботи». Категорія потрібна для фільтра на сайті.</p>
+    <form class="card up" id="upf">
+      <div><label class="l">Фото (можна кілька)</label><input type="file" name="photos" accept="image/*" multiple required></div>
+      <div><label class="l">Категорія</label><select name="tag">${TAGS.map(t=>`<option>${t}</option>`).join('')}</select></div>
+      <div><label class="l">Підпис (необов’язково)</label><input name="caption" placeholder="Напр.: Френч, топ-майстер Анастасія"></div>
+      <button class="btn dark">Завантажити</button>
+    </form>
+    <div class="ggrid">${g.map((x,i) => `<div class="gi" data-g="${x.id}" data-sort="${x.sort}">
+      <img src="/uploads/${esc(x.file)}" loading="lazy" alt="">
+      <div class="b">
+        <select data-f="tag" onchange="saveG(${x.id})">${[...new Set([...TAGS, x.tag].filter(Boolean))].map(t=>`<option ${t===x.tag?'selected':''}>${esc(t)}</option>`).join('')}</select>
+        <input data-f="caption" value="${esc(x.caption)}" placeholder="Підпис" onchange="saveG(${x.id})">
+        <div class="r"><span><button class="btn sm" onclick="moveG(${x.id},-1)">←</button> <button class="btn sm" onclick="moveG(${x.id},1)">→</button></span><button class="btn sm red" onclick="delG(${x.id})">Видалити</button></div>
+      </div></div>`).join('') || '<p class="empty">Фото ще немає</p>'}</div>`;
+  $('#upf').onsubmit = async e => {
+    e.preventDefault(); const b = e.target.querySelector('button'); b.disabled = true; b.textContent = 'Завантаження…';
+    try { const fd = new FormData(e.target), files = fd.getAll('photos'); fd.delete('photos'); for (const f of files) fd.append('photos', await compress(f)); const r = await api('/api/admin/gallery', {method:'POST', body: fd}); toast('Додано фото: ' + r.count); viewGallery(); }
+    catch { b.disabled = false; b.textContent = 'Завантажити'; }
+  };
+}
+const gBody = id => { const el = document.querySelector(`[data-g="${id}"]`); return { tag: el.querySelector('[data-f=tag]').value, caption: el.querySelector('[data-f=caption]').value, sort: +el.dataset.sort }; };
+async function saveG(id) { await api('/api/admin/gallery/' + id, {method:'PUT', body: gBody(id)}); toast('Збережено'); }
+async function delG(id) { if (!confirm('Видалити фото з сайту?')) return; await api('/api/admin/gallery/' + id, {method:'DELETE'}); viewGallery(); }
+async function moveG(id, d) {
+  const els = [...document.querySelectorAll('[data-g]')], i = els.findIndex(e => +e.dataset.g === id), j = i + d;
+  if (j < 0 || j >= els.length) return;
+  [els[i], els[j]] = [els[j], els[i]];
+  await Promise.all(els.map((e, k) => { e.dataset.sort = k; return api('/api/admin/gallery/' + e.dataset.g, {method:'PUT', body: gBody(+e.dataset.g)}); }));
+  viewGallery();
+}
+
+// ---------- masters ----------
+async function viewMasters() {
+  const ms = await api('/api/admin/masters');
+  $('#main').innerHTML = `<h2 class="t">Майстри</h2>
+    <p class="sub">Показуються на сайті в розділі «Наші майстри» і у формі запису. Натисніть на коло, щоб завантажити фото.</p>
+    <div class="bar"><button class="btn dark" onclick="addM()">+ Додати майстра</button></div>
+    <div class="mlist">${ms.map(m => `<div class="card mi" data-m="${m.id}">
+      <div class="ava" onclick="pickPhoto(${m.id})">${m.photo ? `<img src="/uploads/${esc(m.photo)}" alt="">` : esc((m.name||'?')[0])}</div>
+      <div><label class="l">Ім’я</label><input data-f="name" value="${esc(m.name)}" onchange="saveM(${m.id})"></div>
+      <div><label class="l">Посада / спеціалізація</label><input data-f="title" value="${esc(m.title)}" onchange="saveM(${m.id})"></div>
+      <label class="check"><input type="checkbox" data-f="active" ${m.active?'checked':''} onchange="saveM(${m.id})"> На сайті</label>
+      <div style="display:flex;gap:4px">${m.photo?`<button class="btn sm" onclick="rmPhoto(${m.id})">Прибрати фото</button>`:''}<button class="btn sm red" onclick="delM(${m.id})">Видалити</button></div>
+    </div>`).join('')}</div>`;
+}
+function mForm(id) { const el = document.querySelector(`[data-m="${id}"]`), fd = new FormData(); fd.append('name', el.querySelector('[data-f=name]').value); fd.append('title', el.querySelector('[data-f=title]').value); fd.append('active', el.querySelector('[data-f=active]').checked ? '1' : '0'); return fd; }
+async function saveM(id) { await api('/api/admin/masters/' + id, {method:'PUT', body: mForm(id)}); MASTERS = await api('/api/masters-list'); toast('Збережено'); }
+function pickPhoto(id) { const f = $('#filePick'); f.value = ''; f.onchange = async () => { if (!f.files[0]) return; const fd = mForm(id); fd.append('photo', await compress(f.files[0], 900)); await api('/api/admin/masters/' + id, {method:'PUT', body: fd}); toast('Фото оновлено'); viewMasters(); }; f.click(); }
+async function rmPhoto(id) { const fd = mForm(id); fd.append('remove_photo', '1'); await api('/api/admin/masters/' + id, {method:'PUT', body: fd}); viewMasters(); }
+async function addM() { const n = prompt('Ім’я майстра'); if (!n) return; const fd = new FormData(); fd.append('name', n); fd.append('title', 'Майстер'); await api('/api/admin/masters', {method:'POST', body: fd}); MASTERS = await api('/api/masters-list'); viewMasters(); }
+async function delM(id) { if (!confirm('Видалити майстра? Його заявки залишаться, але без прив’язки.')) return; await api('/api/admin/masters/' + id, {method:'DELETE'}); MASTERS = await api('/api/masters-list'); viewMasters(); }
+
+// ---------- users ----------
+async function viewUsers() {
+  const us = await api('/api/admin/users');
+  const mOpts = sel => `<option value="">— не прив’язано —</option>` + MASTERS.map(m => `<option value="${m.id}" ${m.id===sel?'selected':''}>${esc(m.name)} · ${esc(m.title)}</option>`).join('');
+  $('#main').innerHTML = `<h2 class="t">Доступи</h2>
+    <p class="sub">Акаунти для входу в цю панель. <b>Майстер</b> бачить і обробляє заявки (до себе та без майстра). <b>Адміністратор</b> — усе, включно з цінами, фото й налаштуваннями.</p>
+    <form class="card" id="nu" style="margin-bottom:20px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end">
+        <div><label class="l">Логін</label><input name="login" required placeholder="nastya" autocapitalize="off"></div>
+        <div><label class="l">Пароль</label><input name="password" required minlength="6" placeholder="мін. 6 символів"></div>
+        <div><label class="l">Роль</label><select name="role" onchange="this.form.master_id.disabled=this.value==='admin'"><option value="master">Майстер</option><option value="admin">Адміністратор</option></select></div>
+        <div><label class="l">Майстер на сайті</label><select name="master_id">${mOpts(null)}</select></div>
+        <div><label class="l">Ім’я (для себе)</label><input name="name"></div>
+        <button class="btn dark">+ Створити</button>
+      </div>
+    </form>
+    <table><thead><tr><th>Логін</th><th>Роль</th><th>Майстер</th><th>Активний</th><th></th></tr></thead><tbody>
+    ${us.map(u => `<tr data-u="${u.id}">
+      <td><b>${esc(u.login)}</b><br><span style="color:var(--muted)">${esc(u.name)}</span></td>
+      <td><select data-f="role" onchange="saveU(${u.id})"><option value="master" ${u.role==='master'?'selected':''}>Майстер</option><option value="admin" ${u.role==='admin'?'selected':''}>Адміністратор</option></select></td>
+      <td><select data-f="master_id" onchange="saveU(${u.id})" ${u.role==='admin'?'disabled':''}>${mOpts(u.master_id)}</select></td>
+      <td><input type="checkbox" data-f="active" ${u.active?'checked':''} onchange="saveU(${u.id})" style="width:auto"></td>
+      <td style="white-space:nowrap"><button class="btn sm" onclick="resetPw(${u.id})">Новий пароль</button> ${u.id===ME.id?'':`<button class="btn sm red" onclick="delU(${u.id})">✕</button>`}</td>
+    </tr>`).join('')}</tbody></table>`;
+  $('#nu').onsubmit = async e => { e.preventDefault(); const b = Object.fromEntries(new FormData(e.target)); await api('/api/admin/users', {method:'POST', body: b}); toast('Акаунт створено'); viewUsers(); };
+}
+const uBody = id => { const el = document.querySelector(`[data-u="${id}"]`); return { role: el.querySelector('[data-f=role]').value, master_id: el.querySelector('[data-f=master_id]').value || null, active: el.querySelector('[data-f=active]').checked }; };
+async function saveU(id) { try { await api('/api/admin/users/' + id, {method:'PUT', body: uBody(id)}); toast('Збережено'); } catch {} viewUsers(); }
+async function resetPw(id) { const p = prompt('Новий пароль (мін. 6 символів)'); if (!p) return; await api('/api/admin/users/' + id, {method:'PUT', body: {...uBody(id), password: p}}); toast('Пароль змінено'); }
+async function delU(id) { if (!confirm('Видалити акаунт?')) return; await api('/api/admin/users/' + id, {method:'DELETE'}); viewUsers(); }
+
+// ---------- settings ----------
+async function viewSettings() {
+  const s = await api('/api/admin/settings');
+  const F = (k, l, full, ta) => `<div class="${full?'full':''}"><label class="l">${l}</label>${ta?`<textarea name="${k}" rows="4">${esc(s[k])}</textarea>`:`<input name="${k}" value="${esc(s[k])}">`}</div>`;
+  $('#main').innerHTML = `<h2 class="t">Налаштування</h2><p class="sub">Контакти й тексти на сайті.</p>
+    <form class="card" id="sf"><div class="form-grid">
+      ${F('salon_name','Назва')}${F('salon_sub','Підзаголовок логотипа')}
+      ${F('tagline','Головний заголовок',true)}${F('about','Текст «Про нас»',true,true)}
+      ${F('phone','Телефон')}${F('instagram','Instagram (без @)')}
+      ${F('address','Адреса',true)}${F('hours','Графік роботи',true)}
+      ${F('map_lat','Карта: широта')}${F('map_lng','Карта: довгота')}
+    </div>
+    <h3 style="font-family:var(--serif);font-size:26px;font-weight:500;margin:26px 0 6px">Сповіщення в Telegram</h3>
+    <p class="sub" style="margin-bottom:14px">Кожна нова заявка прийде в Telegram. Створіть бота через @BotFather, вставте токен, напишіть боту /start і вкажіть свій chat id (дізнатися: @userinfobot). Для групи — додайте бота в групу і вкажіть id групи.</p>
+    <div class="form-grid">${F('telegram_bot_token','Токен бота')}${F('telegram_chat_id','Chat ID')}</div>
+    <div style="display:flex;gap:10px;margin-top:20px"><button class="btn dark">Зберегти</button><button type="button" class="btn" onclick="tgTest()">Надіслати тест у Telegram</button></div>
+    </form>`;
+  $('#sf').onsubmit = async e => { e.preventDefault(); await api('/api/admin/settings', {method:'PUT', body: Object.fromEntries(new FormData(e.target))}); toast('Налаштування збережено'); };
+}
+async function tgTest() { await api('/api/admin/settings', {method:'PUT', body: Object.fromEntries(new FormData($('#sf')))}); await api('/api/admin/telegram-test', {method:'POST'}); toast('Тест надіслано ✓'); }
+
+function viewPassword() {
+  document.querySelectorAll('#menu button').forEach(b => b.classList.remove('on'));
+  $('#main').innerHTML = `<h2 class="t">Змінити пароль</h2><p class="sub">Логін: <b>${esc(ME.login)}</b></p>
+    <form class="card" id="pf" style="max-width:420px;display:grid;gap:12px">
+      <div><label class="l">Поточний пароль</label><input type="password" name="old" required autocomplete="current-password"></div>
+      <div><label class="l">Новий пароль</label><input type="password" name="new" required minlength="6" autocomplete="new-password"></div>
+      <button class="btn dark">Зберегти</button></form>`;
+  $('#pf').onsubmit = async e => { e.preventDefault(); await api('/api/me/password', {method:'POST', body: Object.fromEntries(new FormData(e.target))}); toast('Пароль змінено'); e.target.reset(); };
+}
+start();
+</script>
+</body>
+</html>
